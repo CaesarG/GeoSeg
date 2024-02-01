@@ -4,7 +4,7 @@ from geoseg.datasets.potsdam_dataset import *
 from geoseg.models.DCSwin import dcswin_small
 from catalyst.contrib.nn import Lookahead
 from catalyst import utils
-from timm.scheduler.poly_lr import PolyLRScheduler
+# from timm.scheduler.poly_lr import PolyLRScheduler
 
 # training hparam
 max_epoch = 30
@@ -73,12 +73,33 @@ def val_aug(img, mask):
     return img, mask
 
 
-train_dataset = PotsdamDataset(data_root='data/potsdam/train', mode='train',
-                               mosaic_ratio=0.25, transform=train_aug)
+# define the dataloader
+work_dirs = "/media/caesarg/Game2/mmsegmentation"
 
-val_dataset = PotsdamDataset(transform=val_aug)
-test_dataset = PotsdamDataset(data_root='data/potsdam/test',
-                              transform=val_aug)
+train_dataset = PotsdamDataset(
+    data_root=os.path.join(work_dirs, "data/Potsdam"),
+    mode="train",
+    mosaic_ratio=0.25,
+    img_dir="img_dir/train",
+    mask_dir="ann_dir/train",
+    img_suffix=".png",
+    transform=train_aug,
+)
+
+val_dataset = PotsdamDataset(
+    data_root=os.path.join(work_dirs, "data/Potsdam"),
+    transform=val_aug,
+    img_dir="img_dir/val",
+    mask_dir="ann_dir/val",
+    img_suffix=".png",
+)
+test_dataset = PotsdamDataset(
+    data_root=os.path.join(work_dirs, "data/Potsdam"),
+    transform=val_aug,
+    img_dir="img_dir/val",
+    mask_dir="ann_dir/val",
+    img_suffix=".png",
+)
 
 train_loader = DataLoader(dataset=train_dataset,
                           batch_size=train_batch_size,

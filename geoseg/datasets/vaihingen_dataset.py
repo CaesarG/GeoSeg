@@ -15,10 +15,13 @@ from .transform import *
 CLASSES = ('ImSurf', 'Building', 'LowVeg', 'Tree', 'Car', 'Clutter')
 PALETTE = [[255, 255, 255], [0, 0, 255], [0, 255, 255], [0, 255, 0], [255, 204, 0], [255, 0, 0]]
 
-ORIGIN_IMG_SIZE = (1024, 1024)
-INPUT_IMG_SIZE = (1024, 1024)
-TEST_IMG_SIZE = (1024, 1024)
+# ORIGIN_IMG_SIZE = (1024, 1024)
+# INPUT_IMG_SIZE = (1024, 1024)
+# TEST_IMG_SIZE = (1024, 1024)
 
+ORIGIN_IMG_SIZE = (512, 512)
+INPUT_IMG_SIZE = (512, 512)
+TEST_IMG_SIZE = (512, 512)
 
 def get_training_transform():
     train_transform = [
@@ -78,7 +81,8 @@ class VaihingenDataset(Dataset):
             img, mask = self.load_mosaic_img_and_mask(index)
             if self.transform:
                 img, mask = self.transform(img, mask)
-
+        mask[mask==0]=7
+        mask-=1
         img = torch.from_numpy(img).permute(2, 0, 1).float()
         mask = torch.from_numpy(mask).long()
         img_id = self.img_ids[index]

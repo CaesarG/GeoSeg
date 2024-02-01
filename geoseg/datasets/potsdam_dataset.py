@@ -15,9 +15,13 @@ import random
 CLASSES = ('ImSurf', 'Building', 'LowVeg', 'Tree', 'Car', 'Clutter')
 PALETTE = [[255, 255, 255], [0, 0, 255], [0, 255, 255], [0, 255, 0], [255, 204, 0], [255, 0, 0]]
 
-ORIGIN_IMG_SIZE = (1024, 1024)
-INPUT_IMG_SIZE = (1024, 1024)
-TEST_IMG_SIZE = (1024, 1024)
+# ORIGIN_IMG_SIZE = (1024, 1024)
+# INPUT_IMG_SIZE = (1024, 1024)
+# TEST_IMG_SIZE = (1024, 1024)
+
+ORIGIN_IMG_SIZE = (512, 512)
+INPUT_IMG_SIZE = (512, 512)
+TEST_IMG_SIZE = (512, 512)
 
 def get_training_transform():
     train_transform = [
@@ -30,7 +34,7 @@ def get_training_transform():
 
 def train_aug(img, mask):
     crop_aug = Compose([RandomScale(scale_list=[0.75, 1.0, 1.25, 1.5], mode='value'),
-                        SmartCropV1(crop_size=768, max_ratio=0.75, ignore_index=len(CLASSES), nopad=False)])
+                        SmartCropV1(crop_size=512, max_ratio=0.75, ignore_index=len(CLASSES), nopad=False)])
     img, mask = crop_aug(img, mask)
     img, mask = np.array(img), np.array(mask)
     aug = get_training_transform()(image=img.copy(), mask=mask.copy())
@@ -80,6 +84,8 @@ class PotsdamDataset(Dataset):
 
         img = torch.from_numpy(img).permute(2, 0, 1).float()
         mask = torch.from_numpy(mask).long()
+        mask[mask==0]=7
+        mask-=1
         img_id = self.img_ids[index]
         results = dict(img_id=img_id, img=img, gt_semantic_seg=mask)
         return results

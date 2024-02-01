@@ -9,8 +9,8 @@ import os
 # training hparam
 max_epoch = 45
 ignore_index = len(CLASSES)
-train_batch_size = 8
-val_batch_size = 8
+train_batch_size = 6
+val_batch_size = 6
 lr = 6e-4
 weight_decay = 0.01
 backbone_lr = 6e-5
@@ -18,6 +18,7 @@ backbone_weight_decay = 0.01
 num_classes = len(CLASSES)
 classes = CLASSES
 
+backbone = "convnext_base.fb_in22k_ft_in1k_384"
 test_time_aug = "d4"
 output_mask_dir, output_mask_rgb_dir = None, None
 weights_name = "unetformer-r18-512crop-ms-e45"
@@ -34,35 +35,38 @@ gpus = "auto"  # default or gpu ids:[0] or gpu nums: 2, more setting can refer t
 resume_ckpt_path = None  # whether continue training with the checkpoint, default None
 
 #  define the network
-net = UNetFormer(num_classes=num_classes)
+net = UNetFormer(num_classes=num_classes,backbone_name=backbone)
 
 # define the loss
 loss = UnetFormerLoss(ignore_index=ignore_index)
 use_aux_loss = True
 
 # define the dataloader
-work_dirs = "/home/kc401/GanQuan/mmsegmentation/"
+work_dirs = "/media/caesarg/Game2/mmsegmentation"
 
 train_dataset = PotsdamDataset(
-    data_root=os.path.join(work_dirs, "data/Potsdam/train"),
+    data_root=os.path.join(work_dirs, "data/Potsdam"),
     mode="train",
     mosaic_ratio=0.25,
-    img_dir="img_dir",
-    mask_dir="ann_dir",
+    img_dir="img_dir/train",
+    mask_dir="ann_dir/train",
+    img_suffix=".png",
     transform=train_aug,
 )
 
 val_dataset = PotsdamDataset(
-    data_root=os.path.join(work_dirs, "data/Potsdam/val"),
+    data_root=os.path.join(work_dirs, "data/Potsdam"),
     transform=val_aug,
-    img_dir="img_dir",
-    mask_dir="ann_dir",
+    img_dir="img_dir/val",
+    mask_dir="ann_dir/val",
+    img_suffix=".png",
 )
 test_dataset = PotsdamDataset(
-    data_root=os.path.join(work_dirs, "data/Potsdam/val"),
+    data_root=os.path.join(work_dirs, "data/Potsdam"),
     transform=val_aug,
-    img_dir="img_dir",
-    mask_dir="ann_dir",
+    img_dir="img_dir/val",
+    mask_dir="ann_dir/val",
+    img_suffix=".png",
 )
 
 train_loader = DataLoader(

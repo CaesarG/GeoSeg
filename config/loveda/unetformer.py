@@ -8,16 +8,17 @@ from catalyst import utils
 # training hparam
 max_epoch = 30
 ignore_index = len(CLASSES)
-train_batch_size = 16
-val_batch_size = 16
+train_batch_size = 6
+val_batch_size = 6
 lr = 6e-4
 weight_decay = 0.01
 backbone_lr = 6e-5
 backbone_weight_decay = 0.01
 num_classes = len(CLASSES)
 classes = CLASSES
-
-weights_name = "unetformer-r18-512crop-ms-epoch30-rep"
+# backbone = "convnext_base.fb_in22k_ft_in1k"
+backbone = "convnext_base.fb_in22k_ft_in1k_384"
+weights_name = "unetformer-convnext-512crop-ms-epoch30-rep"
 weights_path = "model_weights/loveda/{}".format(weights_name)
 test_weights_name = "last"
 log_name = 'loveda/{}'.format(weights_name)
@@ -31,7 +32,7 @@ gpus = 'auto'  # default or gpu ids:[0] or gpu nums: 2, more setting can refer t
 resume_ckpt_path = None  # whether continue training with the checkpoint, default None
 
 #  define the network
-net = UNetFormer(num_classes=num_classes)
+net = UNetFormer(num_classes=num_classes,backbone_name=backbone)
 
 # define the loss
 loss = UnetFormerLoss(ignore_index=ignore_index)
@@ -57,7 +58,7 @@ def train_aug(img, mask):
     return img, mask
 
 
-train_dataset = LoveDATrainDataset(transform=train_aug, data_root='data/LoveDA/train_val')
+train_dataset = LoveDATrainDataset(transform=train_aug, data_root='data/loveDA/train_val')
 
 val_dataset = loveda_val_dataset
 
